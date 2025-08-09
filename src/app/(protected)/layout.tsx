@@ -17,11 +17,9 @@ const SidebarLayout = ({ children }: Props) => {
           <div className="ml-auto"></div>
           <UserButton />
         </div>
-        <div className="h-4">
-            {/* MAIN CONTENT */}
-        </div>
-        <div className="border-sidebar-boder bg-sidebar border shadow rounded-md overflow-y-scroll h-[calc(100vh-6rem)] p-4">
-            {children}
+        <div className="h-4">{/* MAIN CONTENT */}</div>
+        <div className="border-sidebar-border bg-sidebar h-[calc(100vh-6rem)] overflow-y-scroll rounded-md p-4 shadow">
+          {children}
         </div>
       </main>
     </SidebarProvider>
