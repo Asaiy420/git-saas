@@ -35,14 +35,14 @@ const DashboardPage = () => {
           Team Members Invite Button Archive
         </div>
         <div>
-          <div mt-4>
+          <div className="mt-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
               Ask Question Card Meeting Card
             </div>
           </div>
           <div className="mt-8"></div>
           Commit log
-          <CommitLog/>
+          <CommitLog />
         </div>
       </div>
     </div>

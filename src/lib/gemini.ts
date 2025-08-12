@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { Document } from "@langchain/core/documents";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const model = genAI.getGenerativeModel({
@@ -58,3 +59,58 @@ DIFF END`;
   const text = result.response?.text?.() ?? "";
   return text.trim();
 };
+
+export async function summarizeCode(doc: Document) {
+  // Safe, visible logging regardless of missing metadata
+  const source = (doc as any)?.metadata?.source ?? "(unknown source)";
+  const code = doc?.pageContent ? doc.pageContent.slice(0, 10000) : "";
+  console.log(
+    "summarizeCode: getting summary for",
+    source,
+    "len:",
+    code.length,
+  );
+
+  if (!code) {
+    console.warn("summarizeCode: no pageContent provided for", source);
+    return "";
+  }
+
+  try {
+    const response = await model.generateContent([
+      `You are an intelligent senior software engineer who specializes in onboarding junior engineers onto projects.
+You are onboarding a junior software engineer and explaining to them the purpose of the file: ${source}
+Here is the code:
+---
+${code}
+---
+Give me a concise summary (<= 100 words) of the code above.`,
+    ]);
+
+    return response.response.text();
+  } catch (err) {
+    console.error("summarizeCode: generation failed for", source, err);
+    return "";
+  }
+}
+
+export async function generateEmbedding(summary: string) {
+  try {
+    const model = genAI.getGenerativeModel({
+      model: "text-embedding-004",
+    });
+
+    console.log(
+      `Generating embedding for summary: ${summary.substring(0, 50)}...`,
+    );
+    const result = await model.embedContent(summary);
+    const embedding = result.embedding;
+    console.log(
+      `Successfully generated embedding with ${embedding.values.length} dimensions`,
+    );
+    return embedding.values;
+  } catch (error) {
+    console.error("Error generating embedding:", error);
+    throw error; // Rethrow to handle in the caller
+  }
+}

@@ -112,8 +112,6 @@ async function filterUnprocessedCommits(
   const processedCommits = await db.commit.findMany({
     where: { projectId },
   });
-  console.log("processedCommits:", processedCommits);
-  console.log("commitHashes:", commitHashes);
   const unprocessedCommits = commitHashes.filter(
     (commit) =>
       !processedCommits.some(
