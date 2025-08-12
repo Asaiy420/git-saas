@@ -75,6 +75,7 @@ export async function summarizeCode(doc: Document) {
     console.warn("summarizeCode: no pageContent provided for", source);
     return "";
   }
+  
 
   try {
     const response = await model.generateContent([
