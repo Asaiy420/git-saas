@@ -30,7 +30,7 @@ export async function askQuestion(question: string, projectId: string) {
       FROM "SourceCodeEmbedding"
       WHERE "projectId" = ${projectId}
       ORDER BY 1 - ("summaryEmbedding" <-> ${vectorQuery}::vector) DESC
-      LIMIT 15
+      LIMIT 10
       `) as { fileName: string; sourceCode: string; summary: string }[];
 
     // Debug the query results
@@ -59,30 +59,14 @@ export async function askQuestion(question: string, projectId: string) {
       }
     }
 
-    // Debug final context size
-    console.log(`Final context size: ${context.length} characters`);
-  } catch (error) {
-    console.error("Database query error:", error);
-    context = "Error retrieving code context from the database.";
-    result = [];
-  }
-  // Check if context is too large and trim if needed
-  if (context.length > 32000) {
-    console.log("WARNING: Context is too large, trimming...");
-    context =
-      context.substring(0, 32000) +
-      "\n\n[Context was trimmed due to size limits]";
-  }
+    // Generate response using AI
+    (async () => {
+      try {
+        console.log("Generating AI response...");
 
-  // Generate response using AI
-  (async () => {
-    try {
-      console.log("Generating AI response...");
-
-      // Better handling of context and improved prompt
-      const { textStream } = await streamText({
-        model: google("gemini-1.5-flash"),
-        prompt: `You are a specialized code assistant who analyzes repositories and answers questions about code. Your target audience is developers who need help understanding codebases.
+        const { textStream } = await streamText({
+          model: google("gemini-1.5-flash"),
+          prompt: `You are a specialized code assistant who analyzes repositories and answers questions about code. Your target audience is developers who need help understanding codebases.
       The AI assistant is precise, technical, and offers practical solutions.
 
       The traits of this AI include technical accuracy, clarity, and helpfulness.
@@ -90,6 +74,7 @@ export async function askQuestion(question: string, projectId: string) {
       AI is responsive and thorough, providing well-structured and complete answers.
       AI has deep knowledge of programming languages, frameworks, and best practices, and is able to accurately answer nearly any question about code.
       If the question is asking about specific code or files, AI will provide a detailed answer with explanations and examples.
+      Always be precise with answer. If the question is not clear, ask for clarification. And make the response as short as you can with the text format.
 
       START CONTEXT BLOCK
       ${context}
@@ -103,22 +88,24 @@ export async function askQuestion(question: string, projectId: string) {
       If the context does not provide the answer to question, the AI assistant will say, "I don't have enough information from the codebase to answer that question completely. Here's what I can tell you based on the available context..."
       AI assistant will not invent or assume code that is not present in the context.
       Answer in markdown syntax with code snippets as needed. Be as detailed as possible when answering technical questions.`,
-      });
+        });
 
-      for await (const delta of textStream) {
-        stream.update(delta);
+        for await (const delta of textStream) {
+          stream.update(delta);
+        }
+        console.log("AI response generation completed");
+        stream.done();
+      } catch (error) {
+        console.error("Error in text generation:", error);
+        stream.update(
+          "I'm sorry, but I encountered an error while processing your question. Please try again.",
+        );
+        stream.done();
       }
-      console.log("AI response generation completed");
-      stream.done();
-    } catch (error) {
-      console.error("Error in text generation:", error);
-      stream.update(
-        "I'm sorry, but I encountered an error while processing your question. Please try again.",
-      );
-      stream.done();
-    }
-  })();
-
+    })();
+  } catch (e) {
+    console.error("Error in text generation:", e);
+  }
   return {
     output: stream.value,
     filesReferences: result,
