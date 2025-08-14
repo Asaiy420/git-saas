@@ -80,7 +80,7 @@ export const projectRouter = createTRPCRouter({
       projectId: z.string(),
     }),
   )
-  .mutation(async({ctx, input}) => {
+  .query(async({ctx, input}) => {
      return await ctx.db.question.findMany({
       where: {
         projectId : input.projectId
