@@ -50,7 +50,7 @@ const AskQuestionCard = () => {
     setLoading(false);
   };
 
-  const refetch = useRefetch()
+  const refetch = useRefetch();
 
   return (
     <>
@@ -73,7 +73,7 @@ const AskQuestionCard = () => {
                     {
                       onSuccess: () => {
                         toast.success("Answer saved successfully");
-                        refetch()
+                        refetch();
                       },
                       onError: () => {
                         toast.error("Error saving answer");
