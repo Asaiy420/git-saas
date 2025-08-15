@@ -103,19 +103,26 @@ const AskQuestionCard = () => {
           </Button>
         </DialogContent>
       </Dialog>
-      <Card className="border-accent relative col-span-4">
+      <Card className="border-accent relative col-span-3">
         <CardHeader>
-          <CardTitle>Ask a question</CardTitle>
+          <CardTitle className="justify-center text-center">
+            Ask a question
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit}>
             <Textarea
+              className="h-44 text-center justify-center p-15"
               placeholder="Which file should i edit to change the home page?"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
             />
             <div className="h-4"></div>
-            <Button type="submit">Ask Blaze</Button>
+            <div className="items-center justify-center flex flex-col">
+              <Button type="submit" className="cursor-pointer items-center">
+                Ask Blaze
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
