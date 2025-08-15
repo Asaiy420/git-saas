@@ -67,30 +67,59 @@ export const projectRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.question.create({
         data: {
-          answer: input.answer,
-          filesReferences: input.filesReferneces,
           projectId: input.projectId,
           question: input.question,
+          answer: input.answer,
+          filesReferences: input.filesReferneces,
           userId: ctx.user.userId!,
         },
       });
     }),
-  getQuestion: protectedProcedure.input(
-    z.object({
-      projectId: z.string(),
+  getQuestion: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.question.findMany({
+        where: {
+          projectId: input.projectId,
+        },
+        include: {
+          user: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
     }),
-  )
-  .query(async({ctx, input}) => {
-     return await ctx.db.question.findMany({
-      where: {
-        projectId : input.projectId
-      },
-      include: {
-        user: true,
-      },
-      orderBy: {
-        createdAt: "desc"
-      }
-     })
-  })
+
+  uploadMeeting: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        meetingUrl: z.string(),
+        name: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const meeting = await ctx.db.meeting.create({
+        data: {
+          meetingUrl: input.meetingUrl,
+          projectId: input.projectId,
+          name: input.name,
+        },
+      });
+    }),
+
+  getMeeting: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.meeting.findMany({
+        where: {
+          projectId: input.projectId,
+        },
+      });
+    }),
 });

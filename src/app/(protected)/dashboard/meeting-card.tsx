@@ -7,10 +7,17 @@ import { Presentation, Upload } from "lucide-react";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { api } from "@/trpc/react";
+import useProject from "@/hooks/use-project";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const MeetingCard = () => {
+  const { project } = useProject();
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const uploadMeeting = api.project.uploadMeeting.useMutation();
+  const router = useRouter()
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "audio/*": [".mp3", ".wav", ".m4a"],
@@ -18,20 +25,39 @@ const MeetingCard = () => {
     multiple: false,
     maxSize: 50_000_000,
     onDrop: async (acceptedFiles) => {
+      if (!project) return;
       setIsUploading(true);
-      console.log(acceptedFiles);
       const file = acceptedFiles[0];
       if (!file) {
         return "Please add a file first";
       }
-      const downloadFile = await uploadFile(file as File, setProgress);
+      const downloadURL = (await uploadFile(
+        file as File,
+        setProgress,
+      )) as string;
+      uploadMeeting.mutate(
+        {
+          projectId: project.id,
+          meetingUrl: downloadURL,
+          name: file.name,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Meeting uploaded successfully!");
+            router.push('/meetings')
+          },
+          onError: () => {
+            toast.error("Error when uploading the meeting. Please try again!");
+          },
+        },
+      );
       setIsUploading(false);
     },
   });
 
   return (
     <Card
-      className="col-span-2 flex flex-col items-center justify-center border-none p-10 shadow-2xl "
+      className="col-span-2 flex flex-col items-center justify-center border-none p-10 shadow-2xl"
       {...getRootProps()}
     >
       {!isUploading && (
@@ -56,22 +82,20 @@ const MeetingCard = () => {
       )}
 
       {isUploading && (
-          <div>
-            <CircularProgressbar
-              value={progress}
-              text={`${progress}%`}
-              className="size-20"
-              styles={
-                buildStyles({
-                  pathColor: '#2563eb',
-                  textColor: '#2563eb',
-                })
-              }
-            />
-            <p className="text-center text-sm text-gray-500">
-              Uploading your meeting...
-            </p>
-          </div>
+        <div>
+          <CircularProgressbar
+            value={progress}
+            text={`${progress}%`}
+            className="size-20"
+            styles={buildStyles({
+              pathColor: "#2563eb",
+              textColor: "#2563eb",
+            })}
+          />
+          <p className="text-center text-sm text-gray-500">
+            Uploading your meeting...
+          </p>
+        </div>
       )}
     </Card>
   );
