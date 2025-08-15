@@ -55,12 +55,12 @@ const AskQuestionCard = () => {
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[80vw]">
-          <DialogHeader>
-            <div className="flex items-center gap-2">
-              <DialogTitle>{question}</DialogTitle>
+        <DialogContent className="max-h-[90vh] max-w-[90vw] overflow-hidden">
+          <DialogHeader className="pb-4">
+            <div className="flex items-center justify-between gap-4">
+              <DialogTitle className="flex-1 text-left">{question}</DialogTitle>
               <Button
-                variant={"outline"}
+                variant="outline"
                 disabled={saveAnswer.isPending}
                 onClick={() => {
                   saveAnswer.mutate(
@@ -87,40 +87,43 @@ const AskQuestionCard = () => {
             </div>
           </DialogHeader>
 
-          <MDEditor.Markdown
-            source={answer}
-            className="!h-full max-h-[40vh] max-w-[70vw] overflow-scroll"
-          />
-          <div className="h-4"></div>
-          <CodeReferneces filesReferences={filesReferences} />
+          <div className="flex-1 space-y-4 overflow-hidden">
+            <MDEditor.Markdown
+              source={answer}
+              className="max-h-[40vh] overflow-y-auto rounded-md border p-4"
+            />
 
-          <Button
-            type="button"
-            disabled={loading}
-            onClick={() => setOpen(false)}
-          >
-            Close
-          </Button>
+            <CodeReferneces filesReferences={filesReferences} />
+          </div>
+
+          <div className="flex justify-end pt-4">
+            <Button
+              type="button"
+              disabled={loading}
+              onClick={() => setOpen(false)}
+            >
+              Close
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
+
       <Card className="border-accent relative col-span-3">
-        <CardHeader>
-          <CardTitle className="justify-center text-center">
-            Ask a question
-          </CardTitle>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-center text-lg">Ask a question</CardTitle>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit}>
+        <CardContent className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <Textarea
-              className="h-44 text-center justify-center p-15"
+              className="min-h-[120px] resize-none p-6 text-center"
               placeholder="Which file should i edit to change the home page?"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
             />
-            <div className="h-4"></div>
-            <div className="items-center justify-center flex flex-col">
-              <Button type="submit" className="cursor-pointer items-center">
-                Ask Blaze
+
+            <div className="flex justify-center">
+              <Button type="submit" disabled={loading} className="px-8">
+                {loading ? "Asking..." : "Ask Blaze"}
               </Button>
             </div>
           </form>

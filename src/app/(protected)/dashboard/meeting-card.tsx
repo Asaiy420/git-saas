@@ -9,7 +9,7 @@ import { useDropzone } from "react-dropzone";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 
 const MeetingCard = () => {
-  const [isUploading, setIsUploading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -31,7 +31,7 @@ const MeetingCard = () => {
 
   return (
     <Card
-      className="col-span-2 flex flex-col items-center justify-center border-none p-10 shadow-2xl"
+      className="col-span-2 flex flex-col items-center justify-center border-none p-10 shadow-2xl "
       {...getRootProps()}
     >
       {!isUploading && (
