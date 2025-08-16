@@ -1,5 +1,4 @@
-'use client'
-
+"use client";
 
 import {
   Sheet,
@@ -62,7 +61,9 @@ const QaPage = () => {
           <SheetHeader>
             <SheetTitle>{question.question}</SheetTitle>
             <MDEditor.Markdown source={question.answer} />
-            <CodeReferneces filesReferences={(question.filesReferences ?? []) as any}/>
+            <CodeReferneces
+              filesReferences={(question.filesReferences ?? []) as any}
+            />
           </SheetHeader>
         </SheetContent>
       )}
