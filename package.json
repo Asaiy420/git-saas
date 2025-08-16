@@ -74,6 +74,7 @@
 		"ignore": "^7.0.5",
 		"input-otp": "^1.4.2",
 		"lucide-react": "^0.539.0",
+		"motion": "^12.23.12",
 		"next": "^15.2.3",
 		"next-themes": "^0.4.6",
 		"octokit": "^5.0.3",

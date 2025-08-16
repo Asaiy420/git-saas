@@ -136,9 +136,9 @@ const AskQuestionCard = () => {
 							<Button
 								type="submit"
 								disabled={loading}
-								className="px-8"
+								className="px-8 cursor-pointer"
 							>
-								{loading ? "Asking..." : "Ask Blaze"}
+								{loading ? "Asking..." : "Ask Githofy"}
 							</Button>
 						</div>
 					</form>
