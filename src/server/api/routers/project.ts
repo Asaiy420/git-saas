@@ -2,8 +2,24 @@ import z from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { pullCommits } from "@/lib/github";
 import { indexGithubRepo } from "@/lib/github-loader";
+import { db } from "@/server/db";
 
 export const projectRouter = createTRPCRouter({
+  joinProject: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const project = await ctx.db.project.findUnique({
+        where: { id: input.projectId },
+      });
+      if (!project) throw new Error("Project not found");
+
+      return await ctx.db.userToProject.create({
+        data: {
+          userId: ctx.user.userId!,
+          projectId: input.projectId,
+        },
+      });
+    }),
   createProject: protectedProcedure
     .input(
       z.object({
@@ -159,6 +175,19 @@ export const projectRouter = createTRPCRouter({
         },
         data: {
           deletedAt: new Date(),
+        },
+      });
+    }),
+
+  getTeamMembers: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.userToProject.findMany({
+        where: {
+          id: input.projectId,
+        },
+        include: {
+          user: true,
         },
       });
     }),

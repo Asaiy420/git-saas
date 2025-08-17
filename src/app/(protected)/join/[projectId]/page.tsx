@@ -1,55 +1,53 @@
+"use client";
+
 import { db } from "@/server/db";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { redirect, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { api } from "@/trpc/react";
+import useProject from "@/hooks/use-project";
 
 type Props = {
-  params: Promise<{ projectId: string }>;
+  params: { projectId: string };
 };
 
-const JoinHandler = async (props: Props) => {
-  const { projectId } = await props.params;
-  const { userId } = await auth();
-
-  if (!userId) return redirect("/sign-in");
-
-  const dbUser = await db.user.findUnique({
-    where: {
-      id: userId,
+const JoinHandler = ({ params }: Props) => {
+  const { projectId } = params;
+  const { userId, isLoaded } = useAuth();
+  const { setProjectId } = useProject();
+  const router = useRouter();
+  const joinProject = api.project.joinProject.useMutation({
+    onSuccess: () => {
+      setProjectId(projectId);
+      router.push("/dashboard");
+    },
+    onError: (error) => {
+      console.error("Failed to join project:", error);
+      router.push("/dashboard");
     },
   });
 
-  const client = await clerkClient();
-  const user = await client.users.getUser(userId);
-  if (!dbUser) {
-    await db.user.create({
-      data: {
-        id: userId,
-        emailAddress: user.emailAddresses[0]!.emailAddress,
-        imageUrl: user.imageUrl,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
-    });
-  }
-  const project = await db.project.findUnique({
-    where: {
-      id: projectId,
-    },
-  });
-  if (!project) return redirect("/dashboard");
+  useEffect(() => {
+    if (!isLoaded) return; // Wait for auth to load
 
-  try {
-    await db.userToProject.create({
-      data: {
-        userId,
-        projectId,
-      },
-    });
-  } catch (e) {
-    console.log("Error when linking user to project");
-  }
+    if (!userId) {
+      router.push(
+        `/sign-in?redirect_url=${encodeURIComponent(`/join/${projectId}`)}`,
+      );
+      return;
+    }
 
-  return redirect("/dashboard");
+    joinProject.mutate({ projectId });
+  }, [isLoaded, userId, projectId]);
+
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-xl font-semibold">Joining project...</h1>
+        <p className="text-muted-foreground">You will be redirected shortly.</p>
+      </div>
+    </div>
+  );
 };
 
 export default JoinHandler;
