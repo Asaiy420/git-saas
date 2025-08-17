@@ -87,7 +87,7 @@ const MeetingCard = () => {
       {!isUploading && (
         <>
           <Presentation className="size-10 animate-bounce" />
-          <h3 className="mt-2 text-sm font-semibold text-gray-900">
+          <h3 className="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
             Create a meeting
           </h3>
           <p className="mt-1 text-center text-sm text-gray-500">
