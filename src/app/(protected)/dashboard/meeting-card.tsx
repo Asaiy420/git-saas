@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { uploadFile } from "@/lib/firebase";
+import { uploadAudio } from "@/lib/supabase";
 import { Presentation, Upload } from "lucide-react";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -50,10 +50,7 @@ const MeetingCard = () => {
       if (!file) {
         return "Please add a file first";
       }
-      const downloadURL = (await uploadFile(
-        file as File,
-        setProgress,
-      )) as string;
+      const downloadURL = await uploadAudio(file as File);
       uploadMeeting.mutate(
         {
           projectId: project.id,
