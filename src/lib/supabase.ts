@@ -21,5 +21,5 @@ export async function uploadAudio(file: File) {
     .from("audio")
     .getPublicUrl(`audio-files/${file.name}`);
 
-  return publicUrlData.publicUrl;
+  return publicUrlData.publicUrl
 }
