@@ -1,29 +1,71 @@
-# Create T3 App
+# Git-SaaS
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A modern SaaS platform for collaborative GitHub project management, code Q&A, and AI-powered meeting analysis.
 
-## What's next? How do I make an app with this?
+## Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- **GitHub Integration:** Connect and manage your repositories, view commit logs, and collaborate with your team.
+- **AI Meeting Analysis:** Upload and analyze meeting audio files using AI, with storage powered by Supabase.
+- **Code Q&A:** Ask questions about your codebase and get instant answers.
+- **Team Collaboration:** Manage team members, invite collaborators, and track project activity.
+- **Customizable UI:** Light/dark mode toggle and responsive design.
+- **Secure Auth:** User authentication powered by Clerk.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Tech Stack
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **Next.js** – React framework for server-side rendering and routing
+- **Prisma** – Type-safe ORM for PostgreSQL
+- **Supabase** – File storage and real-time database
+- **Clerk** – Authentication and user management
+- **tRPC** – End-to-end typesafe APIs
+- **Tailwind CSS** – Utility-first CSS framework
+- **Radix UI** – Accessible UI primitives
+- **Lucide React** – Icon library
+- **React Query** – Data fetching and caching
+- **Sonner** – Toast notifications
 
-## Learn More
+## Getting Started
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+1. **Clone the repo:**
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+   ```sh
+   git clone https://github.com/your-username/git-saas.git
+   cd git-saas
+   ```
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+2. **Install dependencies:**
 
-## How do I deploy this?
+   ```sh
+   bun install
+   ```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+3. **Set up environment variables:**
+   - Copy `.env.example` to `.env` and fill in your Supabase, Clerk, and database credentials.
+
+4. **Run database migrations:**
+
+   ```sh
+   bun run db:generate
+   ```
+
+5. **Start the development server:**
+
+   ```sh
+   bun dev
+   ```
+
+6. **Open [http://localhost:3000](http://localhost:3000) in your browser.**
+
+## File Uploads
+
+- Audio files are uploaded to Supabase Storage and analyzed by AI.
+- Supported formats: `.mp3`, `.wav`, `.m4a` (max 50MB).
+
+## Deployment
+
+- Deploy easily to [Vercel](https://vercel.com/), [Netlify](https://www.netlify.com/), or Docker.
+- See the official Next.js and T3 deployment docs for more.
+
+## License
+
+MIT
